@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>stuffiny.dev | Premium Development</title>
+    
+    <!-- PWA Settings -->
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <!-- Предзагрузка ресурсов -->
+    <link rel="preload" as="image" href="https://github.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/blob/main/Objects/Shopping%20Cart.webp?raw=true">
+    <link rel="preload" as="image" href="https://github.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/blob/main/Objects/Bar%20Chart.webp?raw=true">
+    <link rel="preload" as="image" href="https://github.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/blob/main/People/Handshake.webp?raw=true">
+    <link rel="preload" as="image" href="https://github.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/blob/main/Objects/Memo.webp?raw=true">
+
+    <style>
+        /* 
+         * ================================================
+         * CSS СТИЛИ
+         * ================================================
+        */
+
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+        :root {
+            --primary-color: #FFFFFF;
+            --background-color: #050505; 
+            --text-color: #e0e0e0;
+            --secondary-text-color: #888;
+            --terminal-bg: #111;
+            --input-bg: #0f0f0f;
+            --accent-glow: rgba(255, 255, 255, 0.1);
+            --scrollbar-color: #333;
+            --accent-green: #27c93f;
+            --error-red: #ff4444;
+        }
+
+        html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--scrollbar-color) var(--background-color); }
+        body::-webkit-scrollbar { width: 4px; }
+        body::-webkit-scrollbar-track { background: var(--background-color); }
+        body::-webkit-scrollbar-thumb { background-color: var(--scrollbar-color); border-radius: 4px; }
+        
+        body {
+            margin: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        h1, h2, h3, .mono-font, .form-input, .terminal {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        #starfield {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; display: block; pointer-events: none;
+        }
+        
+        main { width: 100%; position: relative; z-index: 1; }
+
+        /* --- КНОПКА МУЗЫКИ (CSS LOGO) --- */
+        .music-control {
+            position: fixed;
+            top: 20px; right: 20px;
+            z-index: 9999;
+            background: rgba(10, 10, 10, 0.9); /* Темный фон */
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50px;
+            padding: 6px 14px 6px 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+            outline: none;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            
+            /* Скрытое состояние */
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-20px);
+        }
+
+        .music-control.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .music-control:hover {
+            border-color: rgba(255,255,255,0.25);
+            transform: scale(1.03);
+        }
+
+        /* ЛОГОТИП ТЕРМИНАЛА НА CSS (ИДЕАЛЬНОЕ КАЧЕСТВО) */
+        .music-icon-css {
+            width: 32px;
+            height: 32px;
+            background: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-family: 'Roboto Mono', monospace;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: -1px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+            flex-shrink: 0;
+        }
+
+        .visualizer {
+            display: flex; align-items: flex-end; gap: 3px; height: 14px; margin-right: 2px;
+        }
+        .bar {
+            width: 3px; background: #444; border-radius: 2px; height: 3px; transition: height 0.2s;
+        }
+        .music-control.playing .bar { animation: equalizer 0.8s infinite ease-in-out; background: var(--accent-green); }
+        .music-control.playing .bar:nth-child(1) { animation-delay: 0.0s; }
+        .music-control.playing .bar:nth-child(2) { animation-delay: 0.2s; }
+        .music-control.playing .bar:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes equalizer { 0% { height: 3px; } 50% { height: 14px; } 100% { height: 3px; } }
+
+        /* --- ГЛАВНАЯ СЕКЦИЯ --- */
+        .hero-section {
+            display: flex; align-items: center; justify-content: center;
+            gap: 80px; min-height: 100vh; padding: 40px; flex-wrap: wrap;
+            box-sizing: border-box;
+        }
+        .intro-content { display: flex; flex-direction: column; align-items: flex-start; }
+        
+        #nickname {
+            font-size: 5rem; font-weight: 800; margin: 0; color: #fff;
+            letter-spacing: -3px; text-shadow: 0 0 30px rgba(255, 255, 255, 0.1); line-height: 1.1;
+        }
+
+        .nav-buttons { margin-top: 40px; display: flex; flex-direction: column; gap: 15px; }
+        .nav-buttons a {
+            color: var(--secondary-text-color); text-decoration: none; font-size: 16px; font-family: 'Roboto Mono';
+            padding: 8px 0; transition: color 0.3s; position: relative; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .nav-buttons a:not(.cta):hover { color: #fff; }
+        .nav-buttons a:not(.cta)::after {
+            content: ''; position: absolute; width: 0; height: 1px;
+            display: block; margin-top: 5px; right: 0; background: #fff; transition: width .3s ease;
+        }
+        .nav-buttons a:not(.cta):hover::after { width: 100%; left: 0; }
+        .nav-buttons a.cta {
+            margin-top: 15px; background-color: #fff; color: #000;
+            font-weight: 700; padding: 14px 28px; border-radius: 4px; display: inline-block; text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .nav-buttons a.cta:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2); }
+
+        /* --- ТЕРМИНАЛ --- */
+        .terminal {
+            width: 500px; max-width: 100%; height: 300px;
+            background-color: rgba(10, 10, 10, 0.9); border-radius: 8px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9);
+            display: flex; flex-direction: column; border: 1px solid #333;
+            backdrop-filter: blur(5px);
+        }
+        .terminal-header {
+            background-color: #1a1a1a; padding: 12px 15px; border-top-left-radius: 8px; border-top-right-radius: 8px;
+            display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #333;
+        }
+        .terminal-buttons { display: flex; gap: 8px; }
+        .terminal-button { width: 12px; height: 12px; border-radius: 50%; background-color: #444; position: relative; }
+        
+        #secret-trigger { cursor: default; }
+
+        .terminal-title { 
+            color: #555; font-size: 12px; font-weight: bold; 
+            cursor: default; user-select: none;
+        }
+
+        .terminal-body { padding: 25px; flex-grow: 1; overflow-y: auto; font-size: 14px; line-height: 1.6; color: #ccc; }
+        #code-output { white-space: pre; word-wrap: break-word; }
+        .cursor {
+            display: inline-block; background-color: #fff; width: 8px; height: 1.2em;
+            animation: blink 1s step-end infinite; vertical-align: bottom;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .section { padding: 100px 40px; text-align: center; position: relative; }
+        .section h2 { 
+            margin-top: 0; margin-bottom: 60px; font-size: 32px; color: #fff; 
+            text-transform: uppercase; letter-spacing: 4px; font-weight: 800;
+            display: flex; align-items: center; justify-content: center; gap: 15px;
+        }
+        .section-icon { width: 36px; height: 36px; }
+
+        /* --- НАВЫКИ --- */
+        .skills-container { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; }
+        .skill-block {
+            background: rgba(20, 20, 20, 0.5); border: 1px solid #333; padding: 35px;
+            border-radius: 12px; width: 300px; text-align: left; transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        .skill-block:hover {
+            transform: translateY(-5px); border-color: #555; background: rgba(30, 30, 30, 0.8);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+        .skill-block h3 { margin-top: 0; color: #fff; font-size: 18px; margin-bottom: 15px; }
+        .skill-block p { font-size: 14px; color: #888; line-height: 1.7; margin: 0; }
+
+        /* --- ПРОЕКТЫ --- */
+        .projects-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 40px; align-items: stretch; }
+        .project-card {
+            background: transparent; border: 1px solid #333; border-radius: 16px;
+            width: 380px; max-width: 100%; overflow: hidden; text-decoration: none; color: var(--text-color);
+            display: flex; flex-direction: column; transform: translateZ(0); 
+            transition: all 0.4s ease;
+        }
+        .project-card:hover { transform: translateY(-10px); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7); border-color: #666; }
+        .project-image-wrapper {
+            height: 200px; padding: 30px; box-sizing: border-box; 
+            background: radial-gradient(circle at center, #222 0%, #000 100%);
+            flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .project-image {
+            max-width: 100%; max-height: 100%; display: block; object-fit: contain;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.05)); 
+            transition: transform 0.5s;
+        }
+        .project-card:hover .project-image { transform: scale(1.15) rotate(2deg); }
+        .project-content {
+            background: #111; padding: 30px; flex-grow: 1; display: flex; flex-direction: column; border-top: 1px solid #222;
+        }
+        .project-content h3 { margin-top: 0; font-size: 22px; color: #fff; margin-bottom: 12px; }
+        .project-content p { color: #888; font-size: 14px; line-height: 1.7; margin-bottom: 30px; }
+        .tech-stack { display: flex; gap: 8px; margin-top: auto; flex-wrap: wrap; }
+        .tech-stack span {
+            background-color: #1a1a1a; color: #aaa; border: 1px solid #333; padding: 6px 12px;
+            border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+
+        /* --- ФОРМА --- */
+        .form-container {
+            max-width: 650px; margin: 0 auto; 
+            background: rgba(15, 15, 15, 0.6); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 50px; border-radius: 24px; 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            text-align: left;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+            position: relative; overflow: hidden;
+        }
+        .form-container::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, #27c93f, transparent);
+            opacity: 0.7;
+        }
+
+        .form-group { margin-bottom: 25px; position: relative; }
+        .form-label { 
+            display: block; color: #888; font-size: 12px; margin-bottom: 8px; 
+            text-transform: uppercase; letter-spacing: 1.2px; font-weight: 700; font-family: 'Roboto Mono';
+            transition: color 0.3s;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%; 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff; padding: 18px 20px; border-radius: 12px; 
+            font-family: 'Inter', sans-serif; font-size: 15px; 
+            box-sizing: border-box; outline: none; 
+            appearance: none; -webkit-appearance: none;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .form-input::placeholder, .form-textarea::placeholder { color: #555; font-family: 'Roboto Mono'; font-size: 13px; }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus { 
+            border-color: #27c93f; 
+            background: rgba(255, 255, 255, 0.07);
+            box-shadow: 0 0 20px rgba(39, 201, 63, 0.15); 
+            transform: translateY(-2px);
+        }
+        .form-input.error, .form-textarea.error {
+            border-color: var(--error-red);
+            box-shadow: 0 0 10px rgba(255, 68, 68, 0.2);
+        }
+
+        .form-select { 
+            cursor: pointer; 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); 
+            background-repeat: no-repeat; 
+            background-position: right 20px center; 
+        }
+        /* ТЕМНЫЙ ФОН ДЛЯ ОПЦИЙ */
+        .form-select option { background-color: #1a1a1a; color: #e0e0e0; padding: 12px; }
+
+        .form-textarea { resize: vertical; min-height: 140px; line-height: 1.6; font-family: 'Roboto Mono', monospace; }
+        .hp-field { position: absolute; left: -9999px; opacity: 0; z-index: -1; }
+        
+        /* СЛАЙДЕР */
+        .slider-captcha-container {
+            position: relative;
+            width: 100%; height: 54px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            user-select: none; touch-action: none;
+            transition: border-color 0.3s;
+        }
+        .slider-text {
+            color: #666; font-family: 'Roboto Mono', monospace; font-size: 12px;
+            text-transform: uppercase; letter-spacing: 1px; pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .slider-track {
+            position: absolute; top: 0; left: 0;
+            height: 100%; width: 0;
+            background: rgba(39, 201, 63, 0.15);
+            transition: width 0.1s;
+        }
+        .slider-thumb {
+            position: absolute; top: 4px; bottom: 4px;
+            left: 4px;
+            width: 50px;
+            background: #222;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            cursor: grab;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 18px;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+        .slider-thumb:active { cursor: grabbing; background: #333; transform: scale(0.95); }
+        .slider-thumb::after { content: '→'; font-weight: bold; font-family: monospace; }
+        
+        .slider-captcha-container.verified { border-color: #27c93f; background: rgba(39, 201, 63, 0.05); }
+        .slider-captcha-container.verified .slider-thumb {
+            background: #27c93f; cursor: default; border-color: #27c93f;
+            left: auto; right: 4px;
+        }
+        .slider-captcha-container.verified .slider-thumb::after { content: '✓'; }
+        .slider-captcha-container.verified .slider-text { opacity: 0; }
+        .slider-captcha-container.verified .slider-track { width: 100% !important; background: transparent; }
+
+        .submit-btn {
+            background: #fff; color: #000; border: none; padding: 18px 30px;
+            font-family: 'Roboto Mono', monospace; font-weight: 800; border-radius: 12px; font-size: 16px;
+            cursor: pointer; width: 100%; margin-top: 10px;
+            transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            text-transform: uppercase; letter-spacing: 1px;
+            position: relative; overflow: hidden;
+        }
+        .submit-btn:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 10px 40px rgba(255, 255, 255, 0.2); 
+            background: #fff;
+        }
+        .submit-btn:active { transform: translateY(-1px); }
+        .submit-btn:disabled { background: #333; color: #777; cursor: not-allowed; box-shadow: none; transform: none; }
+        
+        .btn-icon-img { width: 24px; height: 24px; object-fit: contain; }
+
+        .error-message { 
+            color: var(--error-red); font-size: 12px; margin-top: 8px; display: none; 
+            padding-left: 5px; border-left: 2px solid var(--error-red); font-weight: bold;
+            font-family: 'Roboto Mono';
+        }
+
+        /* --- СЕКРЕТНЫЙ ОВЕРЛЕЙ --- */
+        #secret-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.98);
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(20px);
+        }
+        #secret-overlay.active { display: flex; animation: fadeIn 0.5s ease-in-out; }
+        
+        .secret-content {
+            text-align: center;
+            border: 1px solid #333;
+            padding: 40px;
+            border-radius: 0;
+            box-shadow: 0 0 100px rgba(255, 255, 255, 0.1);
+            background: #000;
+            max-width: 90%;
+            position: relative;
+        }
+        .secret-content::before { content: ''; position: absolute; top: -1px; left: -1px; width: 20px; height: 20px; border-top: 2px solid #fff; border-left: 2px solid #fff; }
+        .secret-content::after { content: ''; position: absolute; bottom: -1px; right: -1px; width: 20px; height: 20px; border-bottom: 2px solid #fff; border-right: 2px solid #fff; }
+        
+        .secret-title {
+            font-family: 'Orbitron', sans-serif; color: #fff; font-size: 28px;
+            margin-bottom: 20px; text-transform: uppercase; letter-spacing: 4px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        
+        .secret-text {
+            color: #ccc; font-family: 'Roboto Mono', monospace; font-size: 14px;
+            line-height: 1.6; margin-bottom: 30px;
+        }
+        .secret-desc {
+            color: #888; font-size: 13px; margin-top: 10px; font-style: italic;
+        }
+        
+        .secret-code {
+            background: #000; padding: 20px; border: 1px solid #fff; color: #fff;
+            font-family: monospace; font-size: 20px; letter-spacing: 2px;
+            margin-bottom: 20px; text-shadow: 0 0 5px #fff;
+        }
+
+        .close-secret {
+            background: #fff; border: none; color: #000;
+            padding: 12px 30px; cursor: pointer; font-family: 'Orbitron';
+            font-weight: 900; letter-spacing: 2px; transition: 0.3s;
+        }
+        .close-secret:hover { background: #ccc; box-shadow: 0 0 20px rgba(255,255,255,0.4); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- FAQ --- */
+        .faq-container { max-width: 700px; margin: 0 auto; text-align: left; }
+        .faq-item { border-bottom: 1px solid #222; }
+        .faq-question {
+            width: 100%; background: transparent; border: none; padding: 25px 0;
+            text-align: left; color: #fff; font-size: 16px; font-family: 'Roboto Mono', monospace;
+            cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+            transition: color 0.3s; outline: none;
+        }
+        .faq-question:hover { color: #ccc; }
+        .faq-icon { font-size: 18px; transition: transform 0.3s ease; color: #555; }
+        .faq-item.active .faq-icon { transform: rotate(45deg); color: #fff; }
+        .faq-answer {
+            max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out;
+            color: #888; font-size: 14px; line-height: 1.7; padding-right: 20px;
+        }
+        .faq-item.active .faq-answer { padding-bottom: 25px; }
+        
+        #faq-section { padding: 30px 20px; }
+        #faq-section h2 { font-size: 18px; color: #555; margin-bottom: 30px; letter-spacing: 2px; }
+
+        /* --- КОНТАКТЫ --- */
+        .contacts-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; max-width: 800px; margin: 0 auto; }
+        .contact-card {
+            background: rgba(20,20,20,0.5); border: 1px solid #333; border-radius: 12px;
+            padding: 20px 30px; text-decoration: none; color: #e0e0e0; display: flex;
+            align-items: center; gap: 15px; transition: 0.3s; width: 220px; backdrop-filter: blur(5px);
+        }
+        .contact-card:hover {
+            transform: translateY(-5px); border-color: #fff; box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1); background: #111;
+        }
+        .contact-icon-img { width: 32px; height: 32px; object-fit: contain; transition: transform 0.3s; }
+        .contact-icon-img.rounded { border-radius: 50%; }
+        .contact-card:hover .contact-icon-img { transform: scale(1.2) rotate(-10deg); }
+        .contact-info { display: flex; flex-direction: column; }
+        .contact-title { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: 700; }
+        .contact-value { font-size: 14px; font-weight: 700; color: #fff; }
+
+        /* --- ПОДВАЛ --- */
+        .footer-line {
+            width: 100%; height: 1px; background: linear-gradient(90deg, transparent, #333, transparent); margin: 80px 0 30px 0;
+        }
+        .footer-text {
+            text-align: center; color: #444; font-size: 12px; padding-bottom: 40px;
+            letter-spacing: 2px; text-transform: uppercase; font-family: 'Roboto Mono'; font-weight: 700;
+        }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .hero-section { flex-direction: column; gap: 40px; padding-top: 100px; }
+            #nickname { font-size: 3.5rem; text-align: center; }
+            .intro-content { align-items: center; }
+            .nav-buttons { align-items: center; width: 100%; }
+            .nav-buttons a { width: 100%; text-align: center; }
+            .nav-buttons a.cta { width: auto; }
+            
+            .terminal { width: 95%; height: 250px; }
+            
+            .form-container { padding: 30px 20px; }
+            
+            .skill-block, .project-card, .contact-card { width: 100%; }
+            
+            .music-control { top: auto; bottom: 20px; right: 20px; }
+        }
+</style>
+</head>
+<body>
+    <canvas id="starfield"></canvas>
+    <audio id="bg-music"></audio>
+
+    <!-- СЕКРЕТНЫЙ ОВЕРЛЕЙ -->
+    <div id="secret-overlay">
+        <div class="secret-content">
+            <div class="secret-title">ACCESS GRANTED</div>
+            <div class="secret-text">
+                Поздравляем! Вы нашли скрытый уровень.<br>
+                Ваш приз: <span id="prize-name" style="color: #fff; font-weight: bold;">...</span>
+                <div id="prize-desc" class="secret-desc">...</div>
+            </div>
+            <div class="secret-code" id="prize-code">...</div>
+            <div class="secret-text" style="font-size: 11px; color: #666;">
+                Сделайте скриншот и отправьте @stuffiny
+            </div>
+            <button class="close-secret" onclick="document.getElementById('secret-overlay').classList.remove('active')">CLAIM</button>
+        </div>
+    </div>
+
+    <!-- КНОПКА МУЗЫКИ -->
+    <button id="music-btn" class="music-control">
+        <!-- CSS LOGO -->
+        <div class="music-icon-css">>_</div>
+        <div class="visualizer">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        </div>
+    </button>
+    
+    <main>
+        <section class="hero-section">
+            <div class="intro-content">
+                <h1 id="nickname">Stuffiny</h1>
+                <nav class="nav-buttons">
+                    <a href="#projects">Проекты</a>
+                    <a href="#discuss">Подать заявку</a>
+                    <a href="#contacts">Контакты</a>
+                </nav>
+            </div>
+            
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="terminal-buttons">
+                        <div class="terminal-button" style="background:#ff5f56"></div>
+                        <div class="terminal-button" style="background:#ffbd2e"></div>
+                        <!-- СЕКРЕТНАЯ КНОПКА -->
+                        <div class="terminal-button" id="secret-trigger" style="background:#27c93f"></div>
+                    </div>
+                    <!-- ТОГГЛЕР -->
+                    <div class="terminal-title" id="activate-music">stuffiny.dev — bash</div>
+                </div>
+                <div class="terminal-body"><span id="code-output"></span><span class="cursor"></span></div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2>Навыки</h2>
+            <div class="skills-container">
+                <div class="skill-block"><h3>Bots & Automation</h3><p>Разработка сложных Telegram и Discord ботов. Интеграция AI, платежных систем и управление базами данных.</p></div>
+                <div class="skill-block"><h3>Fullstack Web</h3><p>Создание быстрых и безопасных веб-приложений. Frontend, Backend и настройка серверной инфраструктуры.</p></div>
+                <div class="skill-block"><h3>Product Design</h3><p>Минималистичный UI/UX дизайн. Фокус на удобстве пользователя и эстетике интерфейсов.</p></div>
+            </div>
+        </section>
+
+        <section class="section" id="projects">
+            <h2>Проекты</h2>
+            <div class="projects-container">
+                <a href="https://t.me/ShopStuffiny_bot" target="_blank" class="project-card">
+                    <div class="project-image-wrapper"><img src="https://github.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/blob/main/Objects/Shopping%20Cart.webp?raw=true" alt="Shop" class="project-image" decoding="async"></div>
+                    <div class="project-content">
+                        <h3>Stuffiny Shop</h3><p>Инновационный Telegram-бот для бизнеса. Организация продаж товаров и услуг с приемом оплаты через Telegram Stars.</p>
+                        <div class="tech-stack"><span>Python</span><span>aiogram</span><span>SQLite</span></div>
+                    </div>
+                </a>
+                <a href="https://t.me/PxrserGiftRobot" target="_blank" class="project-card">
+                    <div class="project-image-wrapper"><img src="https://github.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/blob/main/Objects/Bar%20Chart.webp?raw=true" alt="Parser" class="project-image" decoding="async"></div>
+                    <div class="project-content">
+                        <h3>NFT Parser</h3><p>Эффективный инструмент для поиска владельцев NFT. Расширенные алгоритмы, высокая точность и ежедневные обновления.</p>
+                        <div class="tech-stack"><span>Python</span><span>aiogram</span><span>Parsing</span></div>
+                    </div>
+                </a>
+                <a href="https://t.me/GiftGoElfBot" target="_blank" class="project-card">
+                    <div class="project-image-wrapper"><img src="https://github.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/blob/main/People/Handshake.webp?raw=true" alt="Guarantor" class="project-image" decoding="async"></div>
+                    <div class="project-content">
+                        <h3>P2P Guarantor</h3><p>Надежный P2P-гарант для безопасности ваших сделок. Многоступенчатая проверка операций исключает риск мошенничества.</p>
+                        <div class="tech-stack"><span>Python</span><span>aiogram</span><span>SQLite</span><span>asyncio</span></div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section class="section" id="discuss">
+            <h2>
+                <img src="https://github.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/blob/main/Objects/Memo.webp?raw=true" class="section-icon" alt="Memo">
+                Обсудить проект
+            </h2>
+            <div class="form-container">
+                <form id="project-form">
+                    <input type="text" id="hp-check" class="hp-field" autocomplete="off" tabindex="-1">
+
+                    <div class="form-group">
+                        <label class="form-label">Ваше Имя (Только Русские Буквы)</label>
+                        <input type="text" id="input-name" class="form-input" placeholder="Иван Иванов" required>
+                        <div class="error-message" id="name-error">Разрешены только русские буквы и пробелы.</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Telegram (начинается с @)</label>
+                        <input type="text" id="input-tg" class="form-input" placeholder="@username" required>
+                        <div class="error-message" id="tg-error">Только английские буквы, цифры и _. Начинается с @.</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Тип Проекта</label>
+                        <select id="input-type" class="form-select">
+                            <option value="Telegram Bot">Telegram Бот</option>
+                            <option value="Telegram + Web">Telegram + Web</option>
+                            <option value="Web App">Web App</option>
+                            <option value="Script/Parser">Скрипт / Парсер</option>
+                            <option value="Other">Другое</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Техническое задание (мин. 5 слов)</label>
+                        <textarea class="form-textarea" id="tz-input" placeholder="Опишите подробности вашей задачи здесь..." required></textarea>
+                        <div class="error-message" id="tz-error">Опишите задачу подробнее (минимум 5 слов без спама).</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Безопасность</label>
+                        <div class="slider-captcha-container" id="slider-container">
+                            <div class="slider-track" id="slider-track"></div>
+                            <div class="slider-text">Проведите вправо</div>
+                            <div class="slider-thumb" id="slider-thumb"></div>
+                        </div>
+                        <div class="error-message" id="captcha-error">Подтвердите, что вы человек.</div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <img src="https://github.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/blob/main/Objects/Memo.webp?raw=true" alt="Memo" class="btn-icon-img">
+                        Отправить заявку
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <section class="section" id="contacts">
+            <h2>Контакты</h2>
+            <div class="contacts-container">
+                <a href="https://t.me/stuffiny" target="_blank" class="contact-card">
+                    <img src="https://avatars.mds.yandex.net/i?id=457e82e4f7885c1fbf095c02fb3a2fadec6121e5-4517378-images-thumbs&n=13" class="contact-icon-img rounded" alt="Telegram">
+                    <div class="contact-info"><span class="contact-title">Telegram</span><span class="contact-value">@stuffiny</span></div>
+                </a>
+                <a href="https://t.me/stuffinydev" target="_blank" class="contact-card">
+                    <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/main/Objects/Megaphone.webp" class="contact-icon-img" alt="Channel">
+                    <div class="contact-info"><span class="contact-title">Мой Канал</span><span class="contact-value">@stuffinydev</span></div>
+                </a>
+                <a href="mailto:stuffinydev@gmail.com" class="contact-card">
+                    <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/main/Objects/Incoming%20Envelope.webp" class="contact-icon-img" alt="Email">
+                    <div class="contact-info"><span class="contact-title">Email</span><span class="contact-value">stuffinydev@gmail.com</span></div>
+                </a>
+            </div>
+        </section>
+
+        <div class="footer-line"></div>
+        <div class="footer-text">stuffiny 2026</div>
+
+        <section class="section" id="faq-section">
+            <h2>FAQ: Покупка</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <button class="faq-question">Как происходит процесс оплаты?<span class="faq-icon">+</span></button>
+                    <div class="faq-answer">Я работаю по предоплате 50% для начала работы. Оставшаяся часть оплачивается после демонстрации готового проекта.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">Работаете ли вы через Гаранта?<span class="faq-icon">+</span></button>
+                    <div class="faq-answer">Да, конечно. Если вы хотите максимальной безопасности, мы можем провести сделку через проверенных гарантов.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">Что делать, если я найду ошибку (баг)?<span class="faq-icon">+</span></button>
+                    <div class="faq-answer">В стоимость включена поддержка 30 дней. Ошибки исправляются бесплатно.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">Какие сроки выполнения?<span class="faq-icon">+</span></button>
+                    <div class="faq-answer">Простые боты: 1-3 дня. Сложные проекты: от 5 до 14 дней.</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        /* ================================================
+           LOGIC & TELEGRAM INTEGRATION
+           ================================================ */
+
+        const BOT_TOKEN_FORM = "8367834507:AAEDbc7aH32QD4bV3c8v2HxT8IdavQcBwbw";
+        const BOT_TOKEN_LOGS = "8537675125:AAE9tZpEtFvtLu99BkYC-LInZ3mLlF-g5ng";
+        const CHAT_ID = "8560004588";
+
+        const pageLoadTime = Date.now();
+
+        // --- ЛОГЕР ---
+        async function logVisitor() {
+            if (sessionStorage.getItem('logged')) return;
+            try {
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                const ua = navigator.userAgent;
+                const platform = navigator.platform;
+                
+                const message = `🚨 <b>Новый посетитель!</b>\n🌍 <b>IP:</b> ${ipData.ip}\n🖥 <b>Платформа:</b> ${platform}\n🌐 <b>Браузер:</b> ${ua}\n🕒 <b>Время:</b> ${new Date().toLocaleString()}`;
+
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN_LOGS}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: 'HTML' })
+                });
+                sessionStorage.setItem('logged', 'true');
+            } catch (e) { console.error("Log error", e); }
+        }
+        document.addEventListener('DOMContentLoaded', logVisitor);
+
+        // --- ГЕНЕРАТОР ПРИЗОВ (RUSSIAN + DESCRIPTION) ---
+        const prizeList = [
+            { name: "VPS Сервер", desc: "Личный виртуальный сервер на 1 месяц (2 vCPU / 4GB RAM)." },
+            { name: "Хостинг", desc: "Безлимитный веб-хостинг для размещения вашего сайта." },
+            { name: "Аудит Кода", desc: "Полный разбор вашего проекта и советы по оптимизации." },
+            { name: "Набор Иконок", desc: "Премиум пак векторных иконок для дизайна." },
+            { name: "UI Kit", desc: "Набор готовых компонентов интерфейса для быстрой разработки." },
+            { name: "Админ Панель", desc: "Готовый шаблон админ-панели на React/Vue." },
+            { name: "Установка Бота", desc: "Помощь в деплое и настройке вашего бота на сервере." },
+            { name: "Консультация", desc: "30 минут голосовой консультации с разработчиком." },
+            { name: "Домен .ru", desc: "Регистрация доменного имени в зоне .ru на 1 год." },
+            { name: "SSL Защита", desc: "Wildcard SSL сертификат для защиты всех поддоменов." }
+        ];
+
+        function generateCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = '';
+            for (let i = 0; i < 6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+            return `GIFT-${code}-${new Date().getFullYear()}`;
+        }
+
+        // --- СЕКРЕТКА ---
+        const secretTrigger = document.getElementById('secret-trigger');
+        const secretOverlay = document.getElementById('secret-overlay');
+        let secretFound = false;
+
+        secretTrigger.addEventListener('click', async () => {
+            if(secretFound) return;
+            secretFound = true;
+            
+            const randomPrize = prizeList[Math.floor(Math.random() * prizeList.length)];
+            const code = generateCode();
+
+            document.getElementById('prize-name').textContent = randomPrize.name;
+            document.getElementById('prize-desc').textContent = randomPrize.desc;
+            document.getElementById('prize-code').textContent = code;
+            
+            secretOverlay.classList.add('active');
+            
+            // Уведомление в бота
+            try {
+                const message = `⚠️ <b>SECRET FOUND!</b>\n\n🎁 <b>Приз:</b> ${randomPrize.name}\nℹ️ <b>Инфо:</b> ${randomPrize.desc}\n🔑 <b>Код:</b> ${code}\n🕒 ${new Date().toLocaleString()}`;
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN_LOGS}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: 'HTML' })
+                });
+            } catch(e) {}
+        });
+
+        // --- FAQ ---
+        document.querySelectorAll('.faq-item').forEach(item => {
+            const btn = item.querySelector('.faq-question');
+            const answer = item.querySelector('.faq-answer');
+            btn.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+                document.querySelectorAll('.faq-item').forEach(i => {
+                    i.classList.remove('active');
+                    i.querySelector('.faq-answer').style.maxHeight = null;
+                });
+                if (!isActive) {
+                    item.classList.add('active');
+                    answer.style.maxHeight = answer.scrollHeight + "px";
+                }
+            });
+        });
+
+        // --- СЛАЙДЕР ---
+        const sliderContainer = document.getElementById('slider-container');
+        const sliderThumb = document.getElementById('slider-thumb');
+        const sliderTrack = document.getElementById('slider-track');
+        let isDragging = false;
+        let isVerified = false;
+        let startX = 0;
+
+        const getContainerWidth = () => sliderContainer.offsetWidth;
+        const getThumbWidth = () => sliderThumb.offsetWidth;
+
+        const startDrag = (e) => {
+            if (isVerified) return;
+            isDragging = true;
+            startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+            sliderThumb.style.transition = 'none';
+            sliderTrack.style.transition = 'none';
+        };
+
+        const onDrag = (e) => {
+            if (!isDragging || isVerified) return;
+            const x = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+            const deltaX = x - startX; 
+            const maxDrag = getContainerWidth() - getThumbWidth() - 4;
+            let newLeft = Math.max(4, Math.min(maxDrag + 4, 4 + deltaX));
+            
+            sliderThumb.style.left = `${newLeft}px`;
+            sliderTrack.style.width = `${newLeft}px`;
+            
+            if (newLeft >= maxDrag - 5) {
+                isVerified = true;
+                isDragging = false;
+                sliderContainer.classList.add('verified');
+                sliderThumb.style.left = '';
+                document.getElementById('captcha-error').style.display = 'none';
+            }
+        };
+
+        const stopDrag = () => {
+            if (isVerified) return;
+            isDragging = false;
+            sliderThumb.style.transition = 'left 0.3s ease';
+            sliderTrack.style.transition = 'width 0.3s ease';
+            sliderThumb.style.left = '4px';
+            sliderTrack.style.width = '0px';
+        };
+
+        sliderThumb.addEventListener('mousedown', startDrag);
+        sliderThumb.addEventListener('touchstart', startDrag);
+        document.addEventListener('mousemove', onDrag);
+        document.addEventListener('touchmove', onDrag);
+        document.addEventListener('mouseup', stopDrag);
+        document.addEventListener('touchend', stopDrag);
+
+        // --- ФОРМА (УМНАЯ ВАЛИДАЦИЯ) ---
+        const form = document.getElementById('project-form');
+        const submitBtn = document.querySelector('.submit-btn');
+        
+        function isGibberish(text) {
+            if (/(.)\1{3,}/.test(text)) return true; // Повторы (aaaa)
+            const words = text.split(/\s+/);
+            for (let w of words) {
+                if (w.length > 25) return true; // Слишком длинные слова
+            }
+            // Проверка на чередование гласных/согласных (простая эвристика)
+            // Если слишком много согласных подряд (более 5) - скорее всего спам
+            if (/[бвгджзйклмнпрстфхцчшщ]{5,}/i.test(text)) return true;
+            return false;
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.form-input, .form-textarea').forEach(el => el.classList.remove('error'));
+
+            // 1. Капча
+            if (!isVerified) {
+                document.getElementById('captcha-error').style.display = 'block';
+                return;
+            }
+
+            // 2. Anti-Bot
+            if (Date.now() - pageLoadTime < 2000) return;
+            if (document.getElementById('hp-check').value !== "") return;
+
+            // 3. Имя (Только русские)
+            const nameInput = document.getElementById('input-name');
+            const nameVal = nameInput.value.trim();
+            const nameRegex = /^[А-Яа-яЁё\s]+$/;
+            if (!nameRegex.test(nameVal)) {
+                document.getElementById('name-error').style.display = 'block';
+                nameInput.classList.add('error');
+                return;
+            }
+
+            // 4. Telegram (Английские + цифры + _, начинается с @)
+            const tgInput = document.getElementById('input-tg');
+            let tgVal = tgInput.value.trim();
+            const tgRegex = /^@[a-zA-Z0-9_]+$/;
+            if (!tgRegex.test(tgVal)) {
+                document.getElementById('tg-error').style.display = 'block';
+                tgInput.classList.add('error');
+                return;
+            }
+
+            // 5. ТЗ (Минимум 5 слов + проверка на спам)
+            const tzInput = document.getElementById('tz-input');
+            const tzVal = tzInput.value.trim();
+            const wordCount = tzVal.split(/\s+/).filter(w => w.length > 0).length;
+            
+            if (wordCount < 5 || isGibberish(tzVal)) {
+                document.getElementById('tz-error').style.display = 'block';
+                tzInput.classList.add('error');
+                return;
+            }
+
+            const type = document.getElementById('input-type').value;
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = 'Отправка... ⏳';
+            submitBtn.disabled = true;
+
+            const message = `🚀 <b>Новая заявка!</b>\n\n👤 <b>Имя:</b> ${nameVal}\n✈️ <b>Telegram:</b> ${tgVal}\n🛠 <b>Тип:</b> ${type}\n\n📝 <b>ТЗ:</b>\n<i>${tzVal}</i>`;
+
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN_FORM}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: 'HTML' })
+                });
+
+                if (response.ok) {
+                    submitBtn.innerHTML = 'Успешно! ✅';
+                    submitBtn.style.background = '#27c93f';
+                    submitBtn.style.color = '#fff';
+                    localStorage.setItem('lastFormSent', Date.now());
+                    form.reset();
+                    isVerified = false;
+                    sliderContainer.classList.remove('verified');
+                    sliderThumb.style.left = '4px'; sliderTrack.style.width = '0px';
+                    document.querySelector('.slider-text').style.opacity = '1';
+                } else { throw new Error('API Error'); }
+            } catch (error) {
+                alert('Ошибка отправки. Попробуйте позже.');
+                submitBtn.innerHTML = originalBtnText;
+            }
+
+            setTimeout(() => {
+                if(submitBtn.disabled) {
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.style.background = '#fff';
+                    submitBtn.style.color = '#000';
+                    submitBtn.disabled = false;
+                }
+            }, 5000);
+        });
+
+        // --- МУЗЫКА И КНОПКА ---
+        const playlist = [
+            { src: 'hisohkah-school-rooftop-but-it-s-more-nostalgic-rain-sounds-bird-noises-skyso_poecqcME.mp3' }
+        ];
+        let currentTrackIndex = 0;
+        const audio = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-btn');
+        const activator = document.getElementById('activate-music');
+
+        let fadeInterval; const targetVolume = 0.5;
+
+        audio.src = playlist[currentTrackIndex].src;
+        audio.volume = 0;
+
+        activator.addEventListener('click', () => {
+            musicBtn.classList.toggle('visible');
+        });
+
+        function playNext() {
+            audio.currentTime = 0;
+            audio.play();
+        }
+        audio.addEventListener('ended', playNext);
+
+        function fadeAudio(direction) {
+            clearInterval(fadeInterval);
+            if (direction === 'in') {
+                audio.play();
+                if (audio.volume >= targetVolume) audio.volume = 0; 
+                fadeInterval = setInterval(() => {
+                    if (audio.volume < targetVolume) audio.volume = Math.min(audio.volume + 0.05, targetVolume);
+                    else clearInterval(fadeInterval);
+                }, 100);
+            } else {
+                fadeInterval = setInterval(() => {
+                    if (audio.volume > 0.05) audio.volume -= 0.05;
+                    else { audio.volume = 0; audio.pause(); clearInterval(fadeInterval); }
+                }, 100);
+            }
+        }
+
+        musicBtn.addEventListener('click', () => {
+            if (!musicBtn.classList.contains('playing')) {
+                musicBtn.classList.add('playing');
+                fadeAudio('in');
+            } else {
+                musicBtn.classList.remove('playing');
+                fadeAudio('out');
+            }
+        });
+
+        // ================================================================
+        // КОСМОС
+        // ================================================================
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        
+        let spaceObjects = [];
+        const MAX_COMETS = 1;
+        const STARS_COUNT = 150;
+
+        function spawnOnEdge(margin = 50) {
+            const edge = Math.floor(Math.random() * 4); 
+            let x, y;
+            switch(edge) {
+                case 0: x = Math.random() * canvas.width; y = -margin; break;
+                case 1: x = canvas.width + margin; y = Math.random() * canvas.height; break;
+                case 2: x = Math.random() * canvas.width; y = canvas.height + margin; break;
+                case 3: x = -margin; y = Math.random() * canvas.height; break;
+            }
+            return {x, y};
+        }
+
+        class Star {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.1;
+                this.vy = (Math.random() - 0.5) * 0.1;
+                this.radius = Math.random() * 1.5 + 0.5;
+                this.alpha = Math.random() * 0.8 + 0.2;
+                this.dAlpha = (Math.random() - 0.5) * 0.02;
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if(this.x < 0) this.x = canvas.width; if(this.x > canvas.width) this.x = 0;
+                if(this.y < 0) this.y = canvas.height; if(this.y > canvas.height) this.y = 0;
+                
+                this.alpha += this.dAlpha;
+                if(this.alpha > 1 || this.alpha < 0.2) this.dAlpha = -this.dAlpha;
+            }
+            draw() {
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`; ctx.fill();
+            }
+        }
+
+        class Meteor {
+            constructor() {
+                this.type = 'meteor';
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = -50;
+                this.speed = 50 + Math.random() * 10; 
+                this.angle = Math.PI/4 + (Math.random()-0.5)*0.2;
+                this.vx = Math.sin(this.angle) * this.speed;
+                this.vy = Math.cos(this.angle) * this.speed;
+                this.len = 300; 
+                this.active = true;
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if(this.y > canvas.height + 400) this.active = false;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalCompositeOperation = 'lighter';
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(this.x - this.len * Math.sin(this.angle), this.y - this.len * Math.cos(this.angle));
+                const grad = ctx.createLinearGradient(this.x, this.y, this.x - this.len*Math.sin(this.angle), this.y - this.len*Math.cos(this.angle));
+                grad.addColorStop(0, "rgba(255, 255, 255, 1)");
+                grad.addColorStop(1, "rgba(255, 255, 255, 0)");
+                ctx.strokeStyle = grad;
+                ctx.lineWidth = 4;
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = "white";
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        class Comet {
+            constructor() {
+                this.type = 'comet';
+                const pos = spawnOnEdge(100);
+                this.x = pos.x; this.y = pos.y;
+                const angleToCenter = Math.atan2(canvas.height/2 - this.y, canvas.width/2 - this.x);
+                const angle = angleToCenter + (Math.random()-0.5);
+                this.speed = 25 + Math.random() * 5; 
+                this.vx = Math.cos(angle) * this.speed;
+                this.vy = Math.sin(angle) * this.speed;
+                this.radius = 2; 
+                this.tail = [];
+                this.active = true;
+            }
+            update() {
+                this.tail.push({x: this.x, y: this.y});
+                if(this.tail.length > 20) this.tail.shift(); 
+                this.x += this.vx; this.y += this.vy;
+                if(this.x < -200 || this.x > canvas.width+200 || this.y < -200 || this.y > canvas.height+200) {
+                    this.active = false;
+                }
+            }
+            draw() {
+                ctx.save();
+                ctx.globalCompositeOperation = 'lighter';
+                ctx.beginPath();
+                for(let i=0; i<this.tail.length; i++) {
+                    ctx.lineTo(this.tail[i].x, this.tail[i].y);
+                }
+                ctx.strokeStyle = `rgba(255, 255, 255, 0.4)`;
+                ctx.lineWidth = 2;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = "white"; 
+                ctx.stroke();
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+                ctx.fillStyle = "#fff";
+                ctx.shadowBlur = 15; ctx.shadowColor = "#fff";
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        for(let i=0; i<STARS_COUNT; i++) spaceObjects.push(new Star());
+        
+        let lastTime = 0;
+        let meteorTimer = 0;
+
+        function animate(timestamp) {
+            if (!lastTime) lastTime = timestamp;
+            const dt = timestamp - lastTime;
+            lastTime = timestamp;
+            if (document.hidden) { requestAnimationFrame(animate); return; }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            spaceObjects = spaceObjects.filter(obj => {
+                if(obj.type === 'meteor' || obj.type === 'comet') return obj.active;
+                return true;
+            });
+
+            const comets = spaceObjects.filter(o => o.type === 'comet');
+            if(comets.length < MAX_COMETS && Math.random() < 0.005) {
+                spaceObjects.push(new Comet());
+            }
+
+            meteorTimer += dt;
+            if(meteorTimer > 30000) { 
+                spaceObjects.push(new Meteor());
+                meteorTimer = 0;
+            }
+            
+            spaceObjects.forEach(obj => { obj.update(); obj.draw(); });
+
+            const stars = spaceObjects.filter(o => o instanceof Star);
+            ctx.save();
+            for (let i=0; i<stars.length; i++) {
+                for (let j=i+1; j<stars.length; j++) {
+                    const dx = stars[i].x - stars[j].x;
+                    const dy = stars[i].y - stars[j].y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 80) {
+                        ctx.beginPath(); ctx.moveTo(stars[i].x, stars[i].y); ctx.lineTo(stars[j].x, stars[j].y);
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (1 - dist/80)})`;
+                        ctx.lineWidth = 0.5; ctx.stroke();
+                    }
+                }
+            }
+            ctx.restore();
+            requestAnimationFrame(animate);
+        }
+        
+        window.addEventListener("resize", () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+        requestAnimationFrame(animate);
+
+        // --- ТЕРМИНАЛ ---
+        const codeOutput = document.getElementById('code-output'); 
+        const terminalBody = codeOutput.parentElement;
+        const linesToType = [
+            { text: '> cat contacts.txt', delay: 1000 }, { text: ' ', delay: 500 },
+            { text: 'Telegram:  https://t.me/stuffiny', delay: 200 }, 
+            { text: 'Channel:   https://t.me/stuffinydev', delay: 200 },
+            { text: 'Email:     stuffinydev@gmail.com', delay: 1000 }, { text: ' ', delay: 500 },
+            { text: '> npm run deploy', delay: 1000 }, 
+            { text: 'Deploying stuffiny.dev... ✨', delay: 1500 },
+        ];
+        let lI = 0; let cI = 0;
+        function type() {
+            if (lI >= linesToType.length) { setTimeout(() => { codeOutput.textContent=''; lI=0; cI=0; type(); }, 4000); return; }
+            const txt = linesToType[lI].text;
+            if (cI < txt.length) { codeOutput.textContent += txt[cI]; cI++; terminalBody.scrollTop = terminalBody.scrollHeight; setTimeout(type, Math.random()*50+30); }
+            else { codeOutput.textContent += '\n'; lI++; cI=0; setTimeout(type, linesToType[lI-1].delay); }
+        }
+        setTimeout(type, 1500);
+    </script>
+</body>
+</html>
